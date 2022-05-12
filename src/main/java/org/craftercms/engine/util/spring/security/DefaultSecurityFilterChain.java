@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,6 +16,7 @@
 
 package org.craftercms.engine.util.spring.security;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.servlet.Filter;
@@ -40,6 +41,7 @@ public class DefaultSecurityFilterChain implements SecurityFilterChain {
 
     protected List<Filter> filters;
 
+    @ConstructorProperties({"securityEnabled", "urlsToExclude", "filters"})
     public DefaultSecurityFilterChain(final boolean securityEnabled, final String[] urlsToExclude,
                                       final List<Filter> filters) {
         this.securityEnabled = securityEnabled;

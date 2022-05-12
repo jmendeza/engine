@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -31,6 +31,7 @@
     <import resource="classpath:crafter/engine/services/scripting-context.xml"/>
     <import resource="classpath:crafter/engine/services/url-transformation-context.xml"/>
     <import resource="classpath:crafter/engine/services/targeting-context.xml"/>
+    <import resource="classpath:crafter/engine/services/locale-context.xml"/>
 
     <!-- ////////////////////////////////// -->
     <!--								 	-->
@@ -65,7 +66,7 @@
 
     <!--
 	Activates various annotations to be detected in bean classes: Spring's @Required and @Autowired, as well as JSR
-	250's @PostConstruct, @PreDestroy and @Resource (if available), JAX-WS's @WebServiceRef (if available), EJB3's @EJB
+	250's @Resource (if available), JAX-WS's @WebServiceRef (if available), EJB3's @EJB
 	(if available), and JPA's @PersistenceContext and @PersistenceUnit (if available).
     -->
     <context:annotation-config/>
@@ -73,7 +74,7 @@
     <bean id="crafter.applicationContextAccessor" class="org.craftercms.engine.util.spring.ApplicationContextAccessor"/>
 
     <bean id="crafter.propertyResolver" class="org.springframework.core.env.PropertySourcesPropertyResolver">
-        <constructor-arg>
+        <constructor-arg index="0">
             <bean factory-bean="crafter.properties" factory-method="getAppliedPropertySources"/>
         </constructor-arg>
     </bean>
@@ -175,15 +176,15 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.cloudfrontForwardedHeaderFilter" class="org.craftercms.commons.web.CloudfrontForwardedHeaderFilter">
-        <constructor-arg value="${crafter.engine.forwarded.headers.enabled}"/>
+        <constructor-arg name="enabled" value="${crafter.engine.forwarded.headers.enabled}"/>
     </bean>
 
     <bean id="crafter.forwardedHeaderFilter" class="org.craftercms.commons.web.ForwardedHeaderFilter">
-        <constructor-arg value="${crafter.engine.forwarded.headers.enabled}"/>
+        <constructor-arg name="enabled" value="${crafter.engine.forwarded.headers.enabled}"/>
     </bean>
 
     <bean id="crafter.contentCachingFilter" class="org.craftercms.engine.servlet.filter.ContentCachingFilter">
-        <constructor-arg value="${crafter.engine.preview}"/>
+        <constructor-arg name="enabled" value="${crafter.engine.preview}"/>
     </bean>
 
     <bean id="crafter.exceptionHandlingFilter" class="org.craftercms.engine.servlet.filter.ExceptionHandlingFilter">
@@ -204,16 +205,17 @@
     </bean>
 
     <bean id="crafter.corsConfigSource" class="org.craftercms.engine.util.spring.cors.SiteAwareCorsConfigurationSource">
-        <constructor-arg ref="crafter.cacheTemplate"/>
+        <constructor-arg name="cacheTemplate" ref="crafter.cacheTemplate"/>
     </bean>
 
     <bean id="crafter.corsFilter" class="org.springframework.web.filter.CorsFilter">
-        <constructor-arg ref="crafter.corsConfigSource"/>
+        <constructor-arg index="0" ref="crafter.corsConfigSource"/>
     </bean>
 
     <bean id="crafter.scriptFilter" class="org.craftercms.engine.scripting.impl.ScriptFilter">
         <property name="cacheTemplate" ref="crafter.cacheTemplate"/>
         <property name="disableVariableRestrictions" value="${crafter.engine.disableVariableRestrictions}"/>
+        <property name="pluginService" ref="crafter.pluginService"/>
     </bean>
 
     <bean id="crafter.urlRewriteFilter" class="org.craftercms.engine.url.rewrite.UrlRewriteFilter"/>
@@ -229,8 +231,8 @@
     </bean>
 
     <bean id="crafter.proxyFilter" class="org.craftercms.engine.servlet.filter.HttpProxyFilter">
-        <constructor-arg value="${crafter.engine.preview}"/>
-        <constructor-arg>
+        <constructor-arg name="enabled" value="${crafter.engine.preview}"/>
+        <constructor-arg name="proxyController">
             <bean class="org.springframework.web.servlet.mvc.ServletWrappingController">
                 <property name="servletClass" value="org.craftercms.engine.util.servlet.ConfigAwareProxyServlet"/>
                 <property name="servletName" value="Proxy Servlet"/>
@@ -241,12 +243,12 @@
                 </property>
             </bean>
         </constructor-arg>
-        <constructor-arg value="${crafter.engine.proxy.excludedUrls}"/>
+        <constructor-arg name="excludedUrls" value="${crafter.engine.proxy.excludedUrls}"/>
     </bean>
 
     <bean id="crafter.etagFilter" class="org.craftercms.engine.servlet.filter.ConfigAwareEtagFilter">
-        <constructor-arg value="${crafter.engine.header.etag.enable}"/>
-        <constructor-arg value="${crafter.engine.header.etag.include.urls}"/>
+        <constructor-arg name="enabled" value="${crafter.engine.header.etag.enable}"/>
+        <constructor-arg name="includedUrls" value="${crafter.engine.header.etag.include.urls}"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -270,19 +272,20 @@
     </bean>
 
     <bean id="crafter.excludeLevelDescriptorItemFilter" class="org.craftercms.engine.service.filter.ExcludeByNameItemFilter">
-        <constructor-arg value="${crafter.core.merger.strategy.inheritLevels.levelDescriptor.name}"/>
+        <constructor-arg name="excludeRegex"
+                         value="${crafter.core.merger.strategy.inheritLevels.levelDescriptor.name}"/>
     </bean>
 
     <bean id="crafter.excludeDisabledItemFilter" class="org.craftercms.engine.util.predicates.PredicateBasedFilter">
-        <constructor-arg ref="crafter.disabledItemPredicate"/>
+        <constructor-arg name="predicate" ref="crafter.disabledItemPredicate"/>
     </bean>
 
     <bean id="crafter.excludeExpiredItemFilter" class="org.craftercms.engine.util.predicates.PredicateBasedFilter">
-        <constructor-arg ref="crafter.expiredItemPredicate"/>
+        <constructor-arg name="predicate" ref="crafter.expiredItemPredicate"/>
     </bean>
 
     <bean id="crafter.excludeExpiredDtItemFilter" class="org.craftercms.engine.util.predicates.PredicateBasedFilter">
-        <constructor-arg ref="crafter.expiredDtItemPredicate"/>
+        <constructor-arg name="predicate" ref="crafter.expiredDtItemPredicate"/>
     </bean>
 
     <util:list id="crafter.defaultItemPredicates">
@@ -315,12 +318,12 @@
     <!-- ////////////////////////////////// -->
 
     <bean id="crafter.textEncryptor" class="org.craftercms.commons.crypto.impl.PbkAesTextEncryptor">
-        <constructor-arg value="${crafter.security.encryption.key}"/>
-        <constructor-arg value="${crafter.security.encryption.salt}"/>
+        <constructor-arg name="password" value="${crafter.security.encryption.key}"/>
+        <constructor-arg name="salt" value="${crafter.security.encryption.salt}"/>
     </bean>
 
     <bean id="crafter.configurationReader" class="org.craftercms.commons.config.EncryptionAwareConfigurationReader">
-        <constructor-arg ref="crafter.textEncryptor"/>
+        <constructor-arg name="textEncryptor" ref="crafter.textEncryptor"/>
     </bean>
 
     <bean id="crafter.pageAccessManager" class="org.craftercms.engine.security.CrafterPageAccessManager">
@@ -492,7 +495,7 @@
         <property name="descriptorFileExtension" value="${crafter.core.store.descriptorFile.extension}"/>
         <property name="pathValidator">
             <bean class="org.craftercms.commons.validation.validators.impl.SecurePathValidator">
-                <constructor-arg value="path"/>
+                <constructor-arg name="targetKey" value="path"/>
             </bean>
         </property>
     </bean>
@@ -553,6 +556,7 @@
         <property name="applicationContextPaths" value="${crafter.engine.site.default.config.appContext.paths}"/>
         <property name="urlRewriteConfPaths" value="${crafter.engine.site.default.urlrewrite.config.paths}"/>
         <property name="proxyConfigPaths" value="${crafter.engine.site.default.proxy.config.paths}"/>
+        <property name="translationConfigPaths" value="${crafter.engine.site.default.translation.config.paths}"/>
         <property name="groovyClassesPath" value="${crafter.engine.site.default.classes.groovy.path}"/>
         <property name="urlTransformationEngine" ref="crafter.urlTransformationEngine"/>
         <property name="storeService" ref="crafter.contentStoreService"/>
@@ -566,8 +570,8 @@
         <property name="cacheWarmUpEnabled" value="${crafter.engine.site.cache.warmUp.enabled}"/>
         <property name="cacheWarmer" ref="crafter.siteCacheWarmer"/>
         <property name="initTimeout" value="${crafter.engine.site.context.initTimeout}"/>
-        <property name="disableVariableRestrictions" value="${crafter.engine.disableVariableRestrictions}"/>
         <property name="configurationReader" ref="crafter.configurationReader"/>
+        <property name="disableVariableRestrictions" value="${crafter.engine.disableVariableRestrictions}"/>
         <property name="defaultPublicBeans" value="${crafter.engine.defaultPublicBeans}"/>
         <property name="shutdownTimeout" value="${crafter.engine.site.context.shutdownTimeout}"/>
         <property name="publishingTargetResolver" ref="crafter.publishingTargetResolver"/>
@@ -575,6 +579,7 @@
         <property name="enableSandboxBlacklist" value="${crafter.engine.groovy.sandbox.blacklist.enable}"/>
         <property name="sandboxBlacklist" value="${crafter.engine.groovy.sandbox.blacklist.path}"/>
         <property name="enableExpressions" value="${crafter.engine.context.expressions.enable}"/>
+        <property name="enableTranslation" value="${crafter.engine.translation.enable}"/>
     </bean>
 
     <bean id="crafter.fallbackSiteContextFactory" class="org.craftercms.engine.service.context.SiteContextFactory">
@@ -590,6 +595,7 @@
         <property name="applicationContextPaths" value="/config/spring/application-context.xml"/>
         <property name="urlRewriteConfPaths" value="/config/engine/urlrewrite.xml"/>
         <property name="proxyConfigPaths" value="${crafter.engine.site.default.proxy.config.paths}"/>
+        <property name="translationConfigPaths" value="${crafter.engine.site.default.translation.config.paths}"/>
         <property name="groovyClassesPath" value="/classes/groovy"/>
         <property name="urlTransformationEngine" ref="crafter.urlTransformationEngine"/>
         <property name="storeService" ref="crafter.contentStoreService"/>
@@ -609,6 +615,7 @@
         <property name="enableSandboxBlacklist" value="${crafter.engine.groovy.sandbox.blacklist.enable}"/>
         <property name="sandboxBlacklist" value="${crafter.engine.groovy.sandbox.blacklist.path}"/>
         <property name="enableExpressions" value="${crafter.engine.context.expressions.enable}"/>
+        <property name="enableTranslation" value="${crafter.engine.translation.enable}"/>
     </bean>
 
     <!-- ////////////////////////////////// -->
@@ -646,31 +653,38 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <bean id="crafter.searchService" class="org.craftercms.engine.search.SiteAwareSearchService">
-        <property name="indexIdFormat" value="${crafter.engine.search.index.format}"/>
-        <property name="actualSearchService">
-            <bean class="org.craftercms.search.service.impl.v2.SolrRestClientSearchService">
-                <property name="serverUrl" value="${crafter.engine.search.server.url}"/>
-                <property name="accessTokenParameter" value="${crafter.engine.search.server.accessToken.parameter}"/>
-                <property name="accessTokenValue" value="${crafter.engine.search.server.accessToken.value}"/>
+    <!-- Deprecated, in process to be removed -->
+    <bean id="crafter.elasticsearchService" class="org.craftercms.engine.search.legacy.SiteAwareElasticsearchService">
+        <constructor-arg name="client">
+            <bean class="org.craftercms.search.elasticsearch.spring.RestHighLevelClientFactory">
+                <constructor-arg name="serverUrls" value="${crafter.engine.elasticsearch.urls}"/>
+                <property name="username" value="${crafter.engine.elasticsearch.username}"/>
+                <property name="password" value="${crafter.engine.elasticsearch.password}"/>
+                <property name="connectTimeout" value="${crafter.engine.elasticsearch.timeout.connect}"/>
+                <property name="socketTimeout" value="${crafter.engine.elasticsearch.timeout.socket}"/>
+                <property name="threadCount" value="${crafter.engine.elasticsearch.threads}"/>
+                <property name="socketKeepAlive" value="${crafter.engine.elasticsearch.keepAlive}"/>
             </bean>
-        </property>
+        </constructor-arg>
+        <constructor-arg name="indexIdFormat" value="${crafter.engine.search.index.format}"/>
+        <constructor-arg name="enableTranslation" value="${crafter.engine.translation.enable}"/>
+        <property name="filterQueries" value="${crafter.engine.elasticsearch.filters}"/>
     </bean>
 
-    <bean id="crafter.elasticsearchClient"
-          class="org.craftercms.search.elasticsearch.spring.ElasticsearchClientFactory">
-        <constructor-arg value="${crafter.engine.elasticsearch.urls}"/>
-        <property name="username" value="${crafter.engine.elasticsearch.username}"/>
-        <property name="password" value="${crafter.engine.elasticsearch.password}"/>
-        <property name="connectTimeout" value="${crafter.engine.elasticsearch.timeout.connect}"/>
-        <property name="socketTimeout" value="${crafter.engine.elasticsearch.timeout.socket}"/>
-        <property name="threadCount" value="${crafter.engine.elasticsearch.threads}"/>
-        <property name="socketKeepAlive" value="${crafter.engine.elasticsearch.keepAlive}"/>
-    </bean>
-
-    <bean id="crafter.elasticsearchService" class="org.craftercms.engine.search.SiteAwareElasticsearchService">
-        <constructor-arg ref="crafter.elasticsearchClient"/>
-        <constructor-arg value="${crafter.engine.search.index.format}"/>
+    <bean id="crafter.elasticsearchClient" class="org.craftercms.engine.search.SiteAwareElasticsearchClient">
+        <constructor-arg name="client">
+            <bean class="org.craftercms.search.elasticsearch.spring.ElasticsearchClientFactory">
+                <constructor-arg name="serverUrls" value="${crafter.engine.elasticsearch.urls}"/>
+                <property name="username" value="${crafter.engine.elasticsearch.username}"/>
+                <property name="password" value="${crafter.engine.elasticsearch.password}"/>
+                <property name="connectTimeout" value="${crafter.engine.elasticsearch.timeout.connect}"/>
+                <property name="socketTimeout" value="${crafter.engine.elasticsearch.timeout.socket}"/>
+                <property name="threadCount" value="${crafter.engine.elasticsearch.threads}"/>
+                <property name="socketKeepAlive" value="${crafter.engine.elasticsearch.keepAlive}"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg name="indexIdFormat" value="${crafter.engine.search.index.format}"/>
+        <constructor-arg name="enableTranslation" value="${crafter.engine.translation.enable}"/>
         <property name="filterQueries" value="${crafter.engine.elasticsearch.filters}"/>
     </bean>
 
@@ -699,7 +713,6 @@
         <property name="freemarkerSettings">
             <props>
                 <prop key="output_encoding">UTF-8</prop>
-                <prop key="localized_lookup">false</prop>
                 <prop key="object_wrapper">org.craftercms.engine.freemarker.CrafterObjectWrapper(${crafter.engine.groovy.sandbox.enable})</prop>
                 <prop key="datetime_format">${crafter.engine.model.datetime.pattern}</prop>
                 <prop key="time_zone">${crafter.engine.model.datetime.timeZone}</prop>
@@ -719,12 +732,13 @@
         <entry key="urlTransformationService" value-ref="crafter.urlTransformationService"/>
         <entry key="navTreeBuilder" value-ref="crafter.navTreeBuilder"/>
         <entry key="navBreadcrumbBuilder" value-ref="crafter.navBreadcrumbBuilder"/>
-        <entry key="searchService" value-ref="crafter.searchService"/>
         <entry key="elasticsearch" value-ref="crafter.elasticsearchService"/>
+        <entry key="elasticsearchClient" value-ref="crafter.elasticsearchClient"/>
         <entry key="breadcrumbBuilder" value-ref="crafter.breadcrumbBuilder"/>
         <entry key="globalProperties" value-ref="crafter.propertyResolver"/>
         <entry key="modePreview" value="#{T(java.lang.Boolean).valueOf(${crafter.engine.preview})}"/>
         <entry key="crafterEnv" value="${crafter.engine.environment}"/>
+        <entry key="pluginService" value-ref="crafter.pluginService"/>
         <entry key="applicationContext" value-ref="crafter.applicationContextAccessor"/>
 
         <!-- For backwards compatibility only, should not be used anymore -->
@@ -797,6 +811,10 @@
         <property name="targetIdManager" ref="crafter.proxyTargetIdManager"/>
     </bean>
 
+    <bean id="crafter.localeItemProcessor" class="org.craftercms.engine.navigation.impl.LocaleItemProcessor">
+        <constructor-arg name="storeService" ref="crafter.contentStoreService"/>
+    </bean>
+
     <bean id="crafter.rejectIndexFilesItemFilter"
           class="org.craftercms.engine.navigation.impl.RejectIndexFilesItemFilter">
         <property name="targetedUrlStrategy" ref="crafter.proxyTargetedUrlStrategy"/>
@@ -807,16 +825,23 @@
 
     <bean id="crafter.acceptPlaceInNavItemFilter"
           class="org.craftercms.engine.service.filter.ExpectedNodeValueItemFilter">
-        <constructor-arg value="${crafter.engine.page.placeInNav.xpathQuery}"/>
-        <constructor-arg value="true"/>
+        <constructor-arg name="nodeXPathQuery" value="${crafter.engine.page.placeInNav.xpathQuery}"/>
+        <constructor-arg name="expectedValueRegex" value="true"/>
+    </bean>
+
+    <bean id="crafter.localeItemFilter" class="org.craftercms.engine.navigation.impl.LocaleItemFilter">
+        <constructor-arg name="localeCodeSelector" value="${crafter.engine.model.locale.xpathQuery}"/>
+        <constructor-arg name="contentStoreService" ref="crafter.contentStoreService"/>
     </bean>
 
     <util:list id="crafter.navTreeProcessors">
         <ref bean="crafter.folderToIndexItemProcessor"/>
         <ref bean="crafter.currentTargetedVersionItemProcessor"/>
+        <ref bean="crafter.localeItemProcessor"/>
     </util:list>
 
     <util:list id="crafter.navTreeFilters">
+        <ref bean="crafter.localeItemFilter"/>
         <ref bean="crafter.rejectIndexFilesItemFilter"/>
         <ref bean="crafter.rejectDuplicatesItemFilter"/>
         <ref bean="crafter.acceptPlaceInNavItemFilter"/>
@@ -844,14 +869,14 @@
 
     <bean id="crafter.configurationProvider"
           class="org.craftercms.engine.util.config.profiles.ConfigurationProviderImpl">
-        <constructor-arg ref="crafter.siteItemService"/>
+        <constructor-arg name="siteItemService" ref="crafter.siteItemService"/>
     </bean>
 
     <bean id="crafter.configurationResolver" class="org.craftercms.commons.config.ConfigurationResolverImpl">
-        <constructor-arg value="${crafter.engine.environment}"/>
-        <constructor-arg value="${crafter.engine.configuration.basePath}"/>
-        <constructor-arg value="${crafter.engine.configuration.envPath}"/>
-        <constructor-arg ref="crafter.configurationReader"/>
+        <constructor-arg name="environment" value="${crafter.engine.environment}"/>
+        <constructor-arg name="basePath" value="${crafter.engine.configuration.basePath}"/>
+        <constructor-arg name="envPath" value="${crafter.engine.configuration.envPath}"/>
+        <constructor-arg name="configurationReader" ref="crafter.configurationReader"/>
     </bean>
 
     <bean id="crafter.s3ProfileLoader"
@@ -868,7 +893,7 @@
         <property name="profilesUrl" value="${crafter.engine.site.default.config.box.profiles.path}"/>
         <property name="profileMapper">
             <bean class="org.craftercms.commons.config.profiles.box.BoxProfileMapper">
-                <constructor-arg ref="crafter.configurationResolver"/>
+                <constructor-arg name="configurationResolver" ref="crafter.configurationResolver"/>
             </bean>
         </property>
         <property name="configurationProvider" ref="crafter.configurationProvider"/>
@@ -880,7 +905,7 @@
         <property name="profilesUrl" value="${crafter.engine.site.default.config.webdav.profiles.path}"/>
         <property name="profileMapper">
             <bean class="org.craftercms.commons.config.profiles.webdav.WebDavProfileMapper">
-                <constructor-arg ref="crafter.configurationResolver"/>
+                <constructor-arg name="configurationResolver" ref="crafter.configurationResolver"/>
             </bean>
         </property>
         <property name="configurationProvider" ref="crafter.configurationProvider"/>
@@ -945,7 +970,7 @@
         <property name="defaultLimit" value="${crafter.engine.graphql.query.limit}"/>
         <property name="defaultSortField" value="${crafter.engine.graphql.query.sort.field}"/>
         <property name="defaultSortOrder" value="${crafter.engine.graphql.query.sort.order}"/>
-        <property name="elasticsearch" ref="crafter.elasticsearchService"/>
+        <property name="elasticsearchClient" ref="crafter.elasticsearchClient"/>
     </bean>
 
     <bean id="crafter.urlTransformDataFetcher" class="org.craftercms.engine.graphql.impl.fetchers.UrlTransformDataFetcher">
@@ -985,7 +1010,7 @@
     <bean id="crafter.timeFieldFactory" class="org.craftercms.engine.graphql.impl.field.TimeFieldFactory"/>
 
     <bean id="crafter.inputFieldFactory" class="org.craftercms.engine.graphql.impl.field.InputFieldFactory">
-        <constructor-arg value="${crafter.engine.graphql.contentType.field.tokenize.xpath}"/>
+        <constructor-arg name="tokenizeXPath" value="${crafter.engine.graphql.contentType.field.tokenize.xpath}"/>
     </bean>
 
     <bean id="crafter.typeFactory" class="org.craftercms.engine.graphql.impl.type.GraphQLTypeFactoryImpl">
@@ -1029,9 +1054,16 @@
         <property name="disableVariableRestrictions" value="${crafter.engine.disableVariableRestrictions}"/>
     </bean>
 
-    <bean id="crafter.publishingTargetResolver" class="org.craftercms.engine.util.config.SiteAwarePublishingTargetResolver">
-        <constructor-arg value="${crafter.engine.preview}"/>
-        <constructor-arg value="${crafter.engine.site.staging.pattern}"/>
+    <bean id="crafter.publishingTargetResolver"
+          class="org.craftercms.engine.util.config.SiteAwarePublishingTargetResolver">
+        <constructor-arg name="preview" value="${crafter.engine.preview}"/>
+        <constructor-arg name="stagingPattern" value="${crafter.engine.site.staging.pattern}"/>
+    </bean>
+
+    <bean id="crafter.pluginService" class="org.craftercms.engine.plugin.impl.PluginServiceImpl">
+        <constructor-arg name="contentStoreService" ref="crafter.contentStoreService"/>
+        <constructor-arg name="configurationReader" ref="crafter.configurationReader"/>
+        <constructor-arg name="configurationPathPattern" value="${crafter.engine.plugins.config.pattern}"/>
     </bean>
 
     <import resource="${crafter.engine.extension.base}/services-overlay-context.xml"/>

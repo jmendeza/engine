@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -34,13 +34,13 @@ public class CacheTemplateMockUtils {
 
     @SuppressWarnings("unchecked")
     public static void setUpWithNoCaching(CacheTemplate mock) {
-        when(mock.getObject(any(Context.class), any(Callback.class), anyVararg())).then(invocation -> {
+        when(mock.getObject(any(Context.class), any(Callback.class), any())).then(invocation -> {
             Object[] args = invocation.getArguments();
             Callback<?> callback = (Callback<?>) args[1];
 
             return callback.execute();
         });
-        when(mock.getObject(any(Context.class), any(CachingOptions.class), any(Callback.class), anyVararg())).then(
+        when(mock.getObject(any(Context.class), any(CachingOptions.class), any(Callback.class), any())).then(
                 invocation -> {
                     Object[] args = invocation.getArguments();
                     Callback<?> callback = (Callback<?>) args[2];

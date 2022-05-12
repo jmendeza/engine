@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -74,16 +74,20 @@ public class GroovyScriptUtils {
     private GroovyScriptUtils() {
     }
 
+    public static void addLocaleResolverScriptVariables(Map<String, Object> variables, HttpServletRequest request) {
+        addCommonVariables(variables, request, null, null, false);
+    }
+
     public static void addRestScriptVariables(Map<String, Object> variables, HttpServletRequest request,
                                               HttpServletResponse response, ServletContext servletContext) {
-        addCommonVariables(variables, request, response, servletContext);
+        addCommonVariables(variables, request, response, servletContext, true);
         addSecurityVariables(variables);
     }
 
     public static void addSiteItemScriptVariables(Map<String, Object> variables, HttpServletRequest request,
                                                   HttpServletResponse response, ServletContext servletContext,
                                                   SiteItem item, Object templateModel) {
-        addCommonVariables(variables, request, response, servletContext);
+        addCommonVariables(variables, request, response, servletContext, true);
         addSecurityVariables(variables);
         addContentModelVariable(variables, item);
         addTemplateModelVariable(variables, templateModel);
@@ -93,7 +97,7 @@ public class GroovyScriptUtils {
     public static void addControllerScriptVariables(Map<String, Object> variables, HttpServletRequest request,
                                                     HttpServletResponse response, ServletContext servletContext,
                                                     Object templateModel) {
-        addCommonVariables(variables, request, response, servletContext);
+        addCommonVariables(variables, request, response, servletContext, true);
         addSecurityVariables(variables);
         addTemplateModelVariable(variables, templateModel);
     }
@@ -101,7 +105,7 @@ public class GroovyScriptUtils {
     public static void addFilterScriptVariables(Map<String, Object> variables, HttpServletRequest request,
                                                 HttpServletResponse response, ServletContext servletContext,
                                                 FilterChain filterChain) {
-        addCommonVariables(variables, request, response, servletContext);
+        addCommonVariables(variables, request, response, servletContext, true);
         addSecurityVariables(variables);
         addFilterChainVariable(variables, filterChain);
     }
@@ -132,7 +136,8 @@ public class GroovyScriptUtils {
     }
 
     private static void addCommonVariables(Map<String, Object> variables, HttpServletRequest request,
-                                           HttpServletResponse response, ServletContext servletContext) {
+                                           HttpServletResponse response, ServletContext servletContext,
+                                           boolean includeLocale) {
         variables.put(VARIABLE_APPLICATION, servletContext);
         variables.put(VARIABLE_REQUEST, request);
         variables.put(VARIABLE_RESPONSE, response);
@@ -150,7 +155,11 @@ public class GroovyScriptUtils {
         }
 
         variables.put(VARIABLE_LOGGER, GROOVY_SCRIPT_LOGGER);
-        variables.put(VARIABLE_LOCALE, LocaleContextHolder.getLocale());
+
+        // this condition is needed to prevent an infinite loop in the locale resolver
+        if (includeLocale) {
+            variables.put(VARIABLE_LOCALE, LocaleContextHolder.getLocale());
+        }
 
         addSiteContextVariable(variables);
         addSiteConfigVariable(variables);

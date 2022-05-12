@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -52,6 +52,7 @@ public class AnnotationDrivenConfigCustomizer implements BeanPostProcessor {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof RequestMappingHandlerAdapter) {
             RequestMappingHandlerAdapter adapter = (RequestMappingHandlerAdapter) bean;
@@ -66,6 +67,8 @@ public class AnnotationDrivenConfigCustomizer implements BeanPostProcessor {
             }
         } else if (bean instanceof RequestMappingHandlerMapping) {
             RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) bean;
+            // This property changed to `false` by default in Spring 5.3
+            mapping.setUseSuffixPatternMatch(true);
             if (CollectionUtils.isNotEmpty(interceptors)) {
                 mapping.setInterceptors(interceptors.toArray(new Object[interceptors.size()]));
             }

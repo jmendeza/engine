@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,6 +15,7 @@
  */
 package org.craftercms.engine.service.filter;
 
+import java.beans.ConstructorProperties;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class ExcludeByNameItemFilter implements ItemFilter {
 
     private String[] excludeRegexes;
 
+    @ConstructorProperties({"excludeRegex"})
     public ExcludeByNameItemFilter(String excludeRegex) {
         excludeRegexes = new String[1];
         excludeRegexes[0] = excludeRegex;

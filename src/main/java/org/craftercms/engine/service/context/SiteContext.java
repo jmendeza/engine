@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.tuckey.web.filters.urlrewrite.UrlRewriter;
 
@@ -52,6 +53,10 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.craftercms.commons.locale.LocaleUtils.CONFIG_KEY_DEFAULT_LOCALE;
+import static org.craftercms.commons.locale.LocaleUtils.CONFIG_KEY_SUPPORTED_LOCALES;
 
 /**
  * Wrapper for a {@link Context} that adds properties specific to Crafter Engine.
@@ -88,7 +93,6 @@ public class SiteContext {
     protected UrlTransformationEngine urlTransformationEngine;
     protected ScriptFactory scriptFactory;
     protected HierarchicalConfiguration config;
-    protected ServletContext servletContext;
     protected ApplicationContext globalApplicationContext;
     protected ConfigurableApplicationContext applicationContext;
     protected URLClassLoader classLoader;
@@ -97,12 +101,16 @@ public class SiteContext {
     protected GraphQLFactory graphQLFactory;
     protected SiteCacheWarmer cacheWarmer;
     protected HierarchicalConfiguration proxyConfig;
+    protected HierarchicalConfiguration translationConfig;
+    protected LocaleResolver localeResolver;
 
     protected long initTimeout;
     protected CountDownLatch initializationLatch;
     protected ExecutorService maintenanceTaskExecutor;
     protected GraphQL graphQL;
     protected State state;
+
+    private ServletContext servletContext;
 
     private long shutdownTimeout;
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -399,8 +407,29 @@ public class SiteContext {
         this.proxyConfig = proxyConfig;
     }
 
-    public boolean isValid() throws CrafterException {
+    public HierarchicalConfiguration getTranslationConfig() {
+        return translationConfig;
+    }
 
+    public void setTranslationConfig(HierarchicalConfiguration translationConfig) {
+        this.translationConfig = translationConfig;
+    }
+
+    public boolean isTranslationEnabled() {
+        return translationConfig != null &&
+                translationConfig.containsKey(CONFIG_KEY_DEFAULT_LOCALE) &&
+                isNotEmpty(translationConfig.configurationsAt(CONFIG_KEY_SUPPORTED_LOCALES));
+    }
+
+    public LocaleResolver getLocaleResolver() {
+        return localeResolver;
+    }
+
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
+    }
+
+    public boolean isValid() throws CrafterException {
         try {
             if (state == State.INITIALIZING) {
                 logger.debug("Waiting for initialization of {}", this);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -17,7 +17,7 @@
 package org.craftercms.engine.controller.rest;
 
 import org.craftercms.core.controller.rest.RestControllerBase;
-import org.craftercms.engine.search.SiteAwareElasticsearchService;
+import org.craftercms.engine.search.legacy.SiteAwareElasticsearchService;
 import org.elasticsearch.action.search.SearchResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpHeaders;
@@ -55,7 +55,7 @@ public class SiteElasticsearchController extends RestControllerBase {
                        HttpServletResponse response)
             throws IOException {
         // This is needed because we are writing manually the response
-        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
+        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         // Execute the query
         SearchResponse searchResponse = elasticsearchService.search(request, parameters);

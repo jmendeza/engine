@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -256,7 +256,7 @@ public class CrafterPageViewResolver extends WebApplicationObjectSupport impleme
                     String forceHttps = page.queryValue(forceHttpsXPathQuery);
 
                     if (StringUtils.isNotEmpty(contentType) &&
-                        StringUtils.equalsIgnoreCase(redirectContentType, contentType) &&
+                        contentType.matches(redirectContentType) &&
                         StringUtils.isNotEmpty(redirectUrl)) {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Redirecting page @ " + url + " to URL " + redirectUrl);

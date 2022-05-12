@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -35,11 +35,14 @@
         <property name="order" value="#{T(org.springframework.core.Ordered).LOWEST_PRECEDENCE}"/>
         <property name="interceptors" ref="crafter.interceptors"/>
         <property name="urlMap" ref="crafter.urlMappings"/>
+        <!-- This property became false by default in Spring 5.3 -->
+        <property name="useTrailingSlashMatch" value="true"/>
     </bean>
 
     <bean id="crafter.restScriptsController" class="org.craftercms.engine.controller.rest.RestScriptsController">
         <property name="urlTemplateScanner" ref="crafter.scriptUrlTemplateScanner"/>
         <property name="disableVariableRestrictions" value="${crafter.engine.disableVariableRestrictions}"/>
+        <property name="pluginService" ref="crafter.pluginService"/>
     </bean>
 
     <bean id="crafter.staticAssetsRequestHandler" class="org.craftercms.engine.controller.StaticAssetsRequestHandler"
@@ -59,6 +62,7 @@
         <property name="fallbackMessage" value="${crafter.engine.site.fallback.message}"/>
         <property name="storeService" ref="crafter.contentStoreService"/>
         <property name="disableVariableRestrictions" value="${crafter.engine.disableVariableRestrictions}"/>
+        <property name="pluginService" ref="crafter.pluginService"/>
     </bean>
 
     <bean id="crafter.errorPageRenderController" class="org.craftercms.engine.controller.ErrorPageRenderController">
@@ -69,20 +73,23 @@
         <property name="configuredToken" value="${crafter.engine.management.authorizationToken}" />
     </bean>
 
-    <bean id="crafter.siteContextRestController" class="org.craftercms.engine.controller.rest.SiteContextRestController">
+    <bean id="crafter.siteContextRestController"
+          class="org.craftercms.engine.controller.rest.SiteContextRestController">
         <property name="contextManager" ref="crafter.siteContextManager"/>
         <property name="configuredToken" value="${crafter.engine.management.authorizationToken}" />
     </bean>
 
-    <bean id="crafter.siteContentStoreRestController" class="org.craftercms.engine.controller.rest.SiteContentStoreRestController">
-        <property name="wrappedController" ref="crafter.contentStoreRestController"/>
+    <bean id="crafter.siteContentStoreRestController"
+          class="org.craftercms.engine.controller.rest.SiteContentStoreRestController">
+        <constructor-arg name="wrappedController" ref="crafter.contentStoreRestController"/>
     </bean>
 
     <bean id="crafter.siteCacheRestController" class="org.craftercms.engine.controller.rest.SiteCacheRestController">
         <property name="configuredToken" value="${crafter.engine.management.authorizationToken}" />
     </bean>
 
-    <bean id="crafter.siteNavigationRestController" class="org.craftercms.engine.controller.rest.SiteNavigationController">
+    <bean id="crafter.siteNavigationRestController"
+          class="org.craftercms.engine.controller.rest.SiteNavigationController">
         <property name="navTreeBuilder" ref="crafter.navTreeBuilder"/>
         <property name="navBreadcrumbBuilder" ref="crafter.navBreadcrumbBuilder"/>
     </bean>
@@ -107,7 +114,10 @@
 
     <util:map id="crafter.urlMappings">
         <entry key="/api/**" value-ref="crafter.restScriptsController"/>
-        <entry key="/api/1/services/**" value-ref="crafter.restScriptsController"/> <!-- Deprecated mapping, might be removed in a later version -->
+
+        <!-- Deprecated mapping, might be removed in a later version -->
+        <entry key="/api/1/services/**" value-ref="crafter.restScriptsController"/>
+
         <entry key="/static-assets/**" value-ref="crafter.staticAssetsRequestHandler"/>
         <entry key="/remote-assets/**" value-ref="crafter.remoteAssetsRequestHandler"/>
         <entry key="/*" value-ref="crafter.pageRenderController"/>

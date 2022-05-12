@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -21,6 +21,7 @@ import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import java.beans.ConstructorProperties;
 import java.util.stream.Stream;
 
 /**
@@ -46,6 +47,7 @@ public class ConfigAwareEtagFilter extends ShallowEtagHeaderFilter {
      */
     protected PathMatcher pathMatcher;
 
+    @ConstructorProperties({"enabled", "includedUrls"})
     public ConfigAwareEtagFilter(boolean enabled, String[] includedUrls) {
         this.enabled = enabled;
         this.includedUrls = includedUrls;
@@ -54,7 +56,7 @@ public class ConfigAwareEtagFilter extends ShallowEtagHeaderFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return !enabled || Stream.of(includedUrls).noneMatch(url -> pathMatcher.match(url, request.getRequestURI()))
+        return !enabled || Stream.of(includedUrls).noneMatch(url -> pathMatcher.match(url, request.getPathInfo()))
                 || super.shouldNotFilter(request);
     }
 

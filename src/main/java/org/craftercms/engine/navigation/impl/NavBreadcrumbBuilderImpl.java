@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.craftercms.commons.converters.Converter;
 import org.craftercms.commons.lang.UrlUtils;
+import org.craftercms.commons.locale.LocaleUtils;
 import org.craftercms.core.processors.ItemProcessor;
 import org.craftercms.core.processors.impl.ItemProcessorPipeline;
 import org.craftercms.engine.model.SiteItem;
@@ -93,6 +94,7 @@ public class NavBreadcrumbBuilderImpl implements NavBreadcrumbBuilder {
     }
 
     protected String extractBreadcrumbUrl(String url, String root) {
+        url = LocaleUtils.delocalizePath(url);
         String indexFileName = SiteProperties.getIndexFileName();
         String breadcrumbUrl = StringUtils.substringBeforeLast(StringUtils.substringAfter(url, root), indexFileName);
 

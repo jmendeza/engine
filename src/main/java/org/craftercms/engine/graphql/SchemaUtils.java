@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -24,7 +24,7 @@ import org.apache.commons.collections4.ListUtils;
 import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLFloat;
 import static graphql.Scalars.GraphQLInt;
-import static graphql.Scalars.GraphQLLong;
+import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
 import static graphql.scalars.ExtendedScalars.DateTime;
 import static graphql.schema.GraphQLList.list;

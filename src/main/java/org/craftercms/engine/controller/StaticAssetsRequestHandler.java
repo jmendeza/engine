@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -49,12 +49,15 @@ public class StaticAssetsRequestHandler extends ResourceHttpRequestHandler {
     private boolean disableCaching;
 
     protected void init() {
-        if (disableCaching) {
-            // fully disable cache in the browser
-            setCacheControl(CacheControl.noStore());
-        } else {
-            // make the browser check for changes before using a cached version
-            setCacheControl(CacheControl.noCache());
+        // if there is a cache control set explicitly don't change it
+        if (getCacheControl() == null) {
+            if (disableCaching) {
+                // fully disable cache in the browser
+                setCacheControl(CacheControl.noStore());
+            } else {
+                // make the browser check for changes before using a cached version
+                setCacheControl(CacheControl.noCache());
+            }
         }
         setRequireSession(false);
     }

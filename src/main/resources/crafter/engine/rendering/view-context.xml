@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -31,6 +31,8 @@
             <bean class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
                 <!-- We ignore accept header since most of the time views that can't be resolved will be resolved as application/xml -->
                 <property name="ignoreAcceptHeader" value="true" />
+                <!-- This property became false by default in Spring 5.3 -->
+                <property name="favorPathExtension" value="true" />
                 <property name="defaultContentType" value="text/html" />
                 <property name="mediaTypes">
                     <map>
@@ -86,6 +88,7 @@
                 <property name="componentScriptResolver" ref="crafter.componentScriptResolver"/>
                 <property name="exposeSpringMacroHelpers" value="${crafter.engine.disableVariableRestrictions}"/>
                 <property name="enableStatics" value="${crafter.engine.freemarker.statics.enable}"/>
+                <property name="pluginService" ref="crafter.pluginService"/>
             </bean>
         </property>
     </bean>

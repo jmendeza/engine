@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -22,6 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import javax.servlet.http.HttpServletRequest;
+import java.beans.ConstructorProperties;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class SiteAwareCorsConfigurationSource implements CorsConfigurationSource
 
     protected CacheTemplate cacheTemplate;
 
+    @ConstructorProperties({"cacheTemplate"})
     public SiteAwareCorsConfigurationSource(CacheTemplate cacheTemplate) {
         this.cacheTemplate = cacheTemplate;
     }
@@ -78,7 +80,7 @@ public class SiteAwareCorsConfigurationSource implements CorsConfigurationSource
     protected CorsConfiguration getConfiguration(HierarchicalConfiguration<?> corsConfig) {
         if (corsConfig.getBoolean(ENABLE_KEY, false)) {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(getValues(corsConfig, ALLOW_ORIGIN_KEY, ALLOW_ORIGIN_DEFAULT));
+            config.setAllowedOriginPatterns(getOrigins(corsConfig));
             config.setAllowedMethods(getValues(corsConfig, ALLOW_METHODS_KEY, ALLOW_METHODS_DEFAULT));
             config.setAllowedHeaders(getValues(corsConfig, ALLOW_HEADERS_KEY, ALLOW_HEADERS_DEFAULT));
             config.setMaxAge(corsConfig.getLong(MAX_AGE_KEY, MAX_AGE_DEFAULT));
@@ -90,7 +92,18 @@ public class SiteAwareCorsConfigurationSource implements CorsConfigurationSource
     }
 
     protected List<String> getValues(HierarchicalConfiguration<?> config, String key, String defaultValue) {
-        return Arrays.stream(config.getString(key, defaultValue).split(",")).map(String::trim).collect(toList());
+        return Arrays.stream(config.getString(key, defaultValue).split(","))
+                .map(String::trim)
+                .collect(toList());
+    }
+
+    //This is a special case because each pattern can contain additional commas, so we can't split on all of them
+    //The value should look like this "http://localhost:[8000\,3000], http://domain.com"
+    protected List<String> getOrigins(HierarchicalConfiguration<?> config) {
+        // Apache Commons Config will automatically split only the commas that are not escaped
+        return config.getList(String.class, ALLOW_ORIGIN_KEY, List.of(ALLOW_ORIGIN_DEFAULT)).stream()
+                .map(String::trim)
+                .collect(toList());
     }
 
 }

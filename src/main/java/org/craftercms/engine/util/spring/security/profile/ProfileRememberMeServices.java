@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,6 +16,7 @@
 
 package org.craftercms.engine.util.spring.security.profile;
 
+import java.beans.ConstructorProperties;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +46,7 @@ public class ProfileRememberMeServices extends AbstractRememberMeServices {
 
     protected AuthenticationService authenticationService;
 
+    @ConstructorProperties({"key", "userDetailsService", "authenticationService"})
     public ProfileRememberMeServices(final String key, final UserDetailsService userDetailsService,
                                      final AuthenticationService authenticationService) {
         super(key, userDetailsService);

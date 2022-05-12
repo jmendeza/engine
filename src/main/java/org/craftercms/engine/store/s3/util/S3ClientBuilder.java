@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -23,6 +23,8 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 
+import java.beans.ConstructorProperties;
+
 /**
  * Utility class to build the AWS S3 client instances.
  * @author joseross
@@ -31,6 +33,7 @@ public class S3ClientBuilder {
 
     protected S3Profile profile;
 
+    @ConstructorProperties({"endpoint", "region", "accessKey", "secretKey", "pathStyle"})
     public S3ClientBuilder(String endpoint, String region, String accessKey, String secretKey, boolean pathStyle) {
         profile = new S3Profile();
         profile.setEndpoint(endpoint);

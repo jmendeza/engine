@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -251,6 +251,10 @@
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>classpath:crafter/engine/rendering/main-rendering-context.xml</param-value>
+		</init-param>
+		<init-param>
+			<param-name>threadContextInheritable</param-name>
+			<param-value>true</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

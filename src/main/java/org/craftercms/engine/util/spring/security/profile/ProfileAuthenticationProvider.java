@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -26,6 +26,8 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.beans.ConstructorProperties;
+
 /**
  * Implementation of {@link AbstractUserDetailsAuthenticationProvider} that handles form login for with Profile
  *
@@ -38,6 +40,7 @@ public class ProfileAuthenticationProvider extends AbstractUserDetailsAuthentica
 
     protected AuthenticationManager authenticationManager;
 
+    @ConstructorProperties({"tenantsResolver", "authenticationManager"})
     public ProfileAuthenticationProvider(final TenantsResolver tenantsResolver,
                                          final AuthenticationManager authenticationManager) {
         this.tenantsResolver = tenantsResolver;

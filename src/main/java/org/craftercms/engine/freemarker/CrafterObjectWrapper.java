@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,6 +15,7 @@
  */
 package org.craftercms.engine.freemarker;
 
+import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -35,12 +36,12 @@ import java.lang.reflect.Modifier;
  *
  * @author Alfonso Vásquez
  */
-@SuppressWarnings("deprecation")
 public class CrafterObjectWrapper extends DefaultObjectWrapper {
 
     protected final boolean enableSandbox;
 
     public CrafterObjectWrapper(boolean enableSandbox) {
+        super(Configuration.VERSION_2_3_30);
         this.enableSandbox = enableSandbox;
     }
 

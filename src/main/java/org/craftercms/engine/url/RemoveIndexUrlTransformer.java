@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -22,6 +22,8 @@ import org.craftercms.core.service.Context;
 import org.craftercms.core.url.UrlTransformer;
 import org.craftercms.engine.properties.SiteProperties;
 
+import static org.craftercms.commons.locale.LocaleUtils.delocalizePath;
+
 /**
  * Created by alfonsovasquez on 7/9/16.
  */
@@ -30,7 +32,7 @@ public class RemoveIndexUrlTransformer implements UrlTransformer {
     @Override
     public String transformUrl(Context context, CachingOptions cachingOptions,
                                String url) throws UrlTransformationException {
-        return StringUtils.removeEnd(url, SiteProperties.getIndexFileName());
+        return StringUtils.removeEnd(delocalizePath(url), SiteProperties.getIndexFileName());
     }
 
 }

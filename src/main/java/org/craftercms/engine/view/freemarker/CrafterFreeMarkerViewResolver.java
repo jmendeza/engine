@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -15,6 +15,7 @@
  */
 package org.craftercms.engine.view.freemarker;
 
+import org.craftercms.engine.plugin.PluginService;
 import org.craftercms.engine.scripting.SiteItemScriptResolver;
 import org.craftercms.engine.service.SiteItemService;
 import org.springframework.beans.factory.annotation.Required;
@@ -33,6 +34,12 @@ public class CrafterFreeMarkerViewResolver extends FreeMarkerViewResolver {
     protected String componentIncludeElementName;
     protected String componentEmbeddedElementName;
     protected SiteItemScriptResolver componentScriptResolver;
+    protected PluginService pluginService;
+
+    /**
+     * Indicates if access for static methods should be allowed in Freemarker templates
+     */
+    protected boolean enableStatics;
 
     /**
      * Indicates if access for static methods should be allowed in Freemarker templates
@@ -68,6 +75,10 @@ public class CrafterFreeMarkerViewResolver extends FreeMarkerViewResolver {
         this.enableStatics = enableStatics;
     }
 
+    public void setPluginService(PluginService pluginService) {
+        this.pluginService = pluginService;
+    }
+
     @Override
     protected Class requiredViewClass() {
         return CrafterFreeMarkerView.class;
@@ -84,6 +95,7 @@ public class CrafterFreeMarkerViewResolver extends FreeMarkerViewResolver {
         view.setComponentEmbeddedElementName(componentEmbeddedElementName);
         view.setComponentScriptResolver(componentScriptResolver);
         view.setEnableStatics(enableStatics);
+        view.setPluginService(pluginService);
 
         return view;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -26,6 +26,8 @@ import org.craftercms.commons.http.HttpUtils;
 import org.craftercms.engine.service.context.SiteContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import java.beans.ConstructorProperties;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -54,6 +56,8 @@ public class SiteCookieChangeInterceptor extends HandlerInterceptorAdapter {
 
     protected boolean secure;
 
+    @ConstructorProperties({"enabled", "cookieName", "cookieDomain", "cookiePath", "cookieMaxAge", "httpOnly",
+            "secure"})
     public SiteCookieChangeInterceptor(final boolean enabled, final String cookieName, final String cookieDomain,
                                        final String cookiePath, final int cookieMaxAge, final boolean httpOnly,
                                        final boolean secure) {
