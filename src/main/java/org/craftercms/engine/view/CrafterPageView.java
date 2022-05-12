@@ -15,13 +15,6 @@
  */
 package org.craftercms.engine.view;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,7 +32,12 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractView;
 
-import static org.craftercms.engine.util.GroovyScriptUtils.addSiteItemScriptVariables;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import static org.craftercms.engine.util.GroovyScriptUtils.addSiteItemScriptVariables;
 

@@ -108,14 +108,6 @@ public class CrafterFreeMarkerView extends FreeMarkerView {
      */
     protected boolean enableStatics;
 
-    // Needed because the field in the superclass is private
-    protected boolean disableVariableRestrictions;
-
-    /**
-     * Indicates if access for static methods should be allowed in Freemarker templates
-     */
-    protected boolean enableStatics;
-
     protected ServletContextHashModel servletContextHashModel;
     protected ApplicationContextAccessor applicationContextAccessor;
 

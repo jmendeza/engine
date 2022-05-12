@@ -41,11 +41,6 @@ public class CrafterFreeMarkerViewResolver extends FreeMarkerViewResolver {
      */
     protected boolean enableStatics;
 
-    /**
-     * Indicates if access for static methods should be allowed in Freemarker templates
-     */
-    protected boolean enableStatics;
-
     @Required
     public void setSiteItemService(SiteItemService siteItemService) {
         this.siteItemService = siteItemService;

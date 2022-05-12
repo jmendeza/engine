@@ -245,7 +245,6 @@ public class SiteContextFactory implements ApplicationContextAware, ServletConte
         this.maxAllowedItemsInCache = maxAllowedItemsInCache;
     }
 
-
     public void setIgnoreHiddenFiles(boolean ignoreHiddenFiles) {
         this.ignoreHiddenFiles = ignoreHiddenFiles;
     }

@@ -112,11 +112,6 @@
             <artifactId>cglib</artifactId>
             <version>${cglib.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.locationtech.spatial4j</groupId>
-            <artifactId>spatial4j</artifactId>
-            <version>${spatial4j.version}</version>
-        </dependency>
 
         <!-- Groovy -->
         <dependency>
@@ -233,10 +228,6 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sts</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sts</artifactId>
-        </dependency>
 
         <!-- Box -->
         <dependency>
@@ -317,12 +308,6 @@
 	    <artifactId>spatial4j</artifactId>
 	    <version>${spatial4j.version}</version>
 	</dependency>
-
-        <dependency>
-            <groupId>org.mitre.dsmiley.httpproxy</groupId>
-            <artifactId>smiley-http-proxy-servlet</artifactId>
-            <version>${httpproxy.version}</version>
-        </dependency>
 
         <dependency>
             <groupId>org.mitre.dsmiley.httpproxy</groupId>
