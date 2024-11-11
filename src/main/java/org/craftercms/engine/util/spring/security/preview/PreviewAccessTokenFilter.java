@@ -15,19 +15,19 @@
  */
 package org.craftercms.engine.util.spring.security.preview;
 
-import org.craftercms.commons.crypto.CryptoException;
-import org.craftercms.commons.crypto.TextEncryptor;
-import org.craftercms.commons.http.HttpUtils;
-import org.craftercms.engine.exception.HttpStatusCodeException;
-import org.craftercms.engine.service.context.SiteContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.filter.GenericFilterBean;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.craftercms.commons.crypto.CryptoException;
+import org.craftercms.commons.crypto.TextEncryptor;
+import org.craftercms.commons.http.HttpUtils;
+import org.craftercms.engine.exception.PreviewAccessException;
+import org.craftercms.engine.service.context.SiteContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.filter.GenericFilterBean;
+
 import java.beans.ConstructorProperties;
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,16 +70,16 @@ public class PreviewAccessTokenFilter extends GenericFilterBean {
         if (isEmpty(previewToken)) {
             String message = format("User is not authorized to preview site. '%s' header or '%s' token not found",
                     PREVIEW_SITE_TOKEN_HEADER_NAME, PREVIEW_SITE_TOKEN_NAME);
-            logger.error(message);
-            throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, message);
+            logger.debug(message);
+            throw new PreviewAccessException(HttpStatus.UNAUTHORIZED, message);
         }
 
         String[] tokens = decryptPreviewToken(previewToken);
         if (tokens.length != 2) {
             String message = format("Failed to validate preview site token. Found '%s' header or '%s' token elements but expecting 2",
                     PREVIEW_SITE_TOKEN_HEADER_NAME, PREVIEW_SITE_TOKEN_NAME);
-            logger.error(message);
-            throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, message);
+            logger.debug(message);
+            throw new PreviewAccessException(HttpStatus.UNAUTHORIZED, message);
         }
 
         long tokenTimestamp = Long.parseLong(tokens[1]);
@@ -87,8 +87,8 @@ public class PreviewAccessTokenFilter extends GenericFilterBean {
         if (isExpired) {
             String message = format("User is not authorized to preview site '%s', '%s' header or '%s' token has expired",
                     site, PREVIEW_SITE_TOKEN_HEADER_NAME, PREVIEW_SITE_TOKEN_NAME);
-            logger.error(message);
-            throw new HttpStatusCodeException(HttpStatus.FORBIDDEN, message);
+            logger.debug(message);
+            throw new PreviewAccessException(HttpStatus.FORBIDDEN, message);
         }
 
         String previewSitesFromToken = tokens[0];
@@ -96,8 +96,8 @@ public class PreviewAccessTokenFilter extends GenericFilterBean {
         if (!allowedSites.contains(site)) {
             String message = format("User is not authorized to preview site '%s', '%s' header or '%s' token does not match",
                     site, PREVIEW_SITE_TOKEN_HEADER_NAME, PREVIEW_SITE_TOKEN_NAME);
-            logger.error(message);
-            throw new HttpStatusCodeException(HttpStatus.FORBIDDEN, message);
+            logger.debug(message);
+            throw new PreviewAccessException(HttpStatus.FORBIDDEN, message);
         }
 
         chain.doFilter(request, response);
@@ -115,8 +115,8 @@ public class PreviewAccessTokenFilter extends GenericFilterBean {
                     .split("\\|");
         } catch (CryptoException e) {
             String message = "Failed to decrypt preview site token";
-            logger.error(message, e);
-            throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, message);
+            logger.debug(message, e);
+            throw new PreviewAccessException(HttpStatus.UNAUTHORIZED, message);
         }
     }
 }
